@@ -1,0 +1,7 @@
+# Core (data gen + viz)
+numpy>=1.26
+matplotlib>=3.8
+
+# Deep learning (install after the pipeline works)
+# torch>=2.2
+# torch_geometric>=2.5
