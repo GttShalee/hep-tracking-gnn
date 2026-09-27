@@ -59,14 +59,28 @@ python -m src.visualize --data data/toy_hits.npz --event 0 --out results/event_0
 ## 当前进度
 
 - [x] 物理探测器模拟 (螺旋线 hit + 噪声)
-- [x] 探测器可视化
-- [ ] kNN 碰撞图构建
-- [ ] Embedding MLP (同粒子 hit 在 latent 空间拉近)
-- [ ] Edge filtering (距离阈值剪枝)
-- [ ] GNN edge classifier (判断两 hit 是否同属一条径迹)
+- [x] 探测器可视化 (xy + rz)
+- [x] kNN 碰撞图构建 (scipy cKDTree, k=8)
+- [x] Baseline edge classifier (NodeEncoder MLP + EdgeClf MLP, 无 message passing)
+- [x] 训练 pipeline (MPS 后端, BCE + pos_weight)
+- [ ] 升级到真正的 GNN (GCN/GAT message passing)
+- [ ] Edge filtering (embedding 空间距离剪枝)
 - [ ] 径迹后处理 (Union-Find / connected components)
-- [ ] 指标：edge purity / reconstruction efficiency / fake rate
+- [ ] 指标：reconstruction efficiency / fake rate
 - [ ] MPS vs CPU 性能剖析
+
+## 训练结果 (baseline, 30 epochs, M1 Pro MPS)
+
+| epoch | train loss | val AUC | val acc |
+|---|---|---|---|
+| 1 | 1.159 | 0.577 | 0.181 |
+| 10 | 0.518 | 0.935 | 0.847 |
+| 20 | 0.231 | 0.983 | 0.941 |
+| 30 | 0.169 | **0.989** | 0.956 |
+
+数据: 64 events × ~1382 hits, k=8 kNN graph, edge signal fraction ~17.6%。
+注意这是 **无 message passing 的纯 MLP baseline**——只用每个 hit 的坐标和边上的简单特征，
+还没上 GNN。下一步换 GCN/GAT 后 AUC 应该能逼近 0.995+。
 
 ## 参考
 
